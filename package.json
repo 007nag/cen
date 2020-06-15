@@ -1,0 +1,22 @@
+{
+  "name": "socket",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "nag",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "images-scraper": "^5.0.7",
+    "kafka-node": "^5.0.0",
+    "mongodb": "^3.5.7",
+    "nodemon": "^2.0.3",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "server": "^1.0.27",
+    "socket.io": "^2.3.0"
+  }
+}

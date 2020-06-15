@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head> <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="socket.io.js" charset="utf-8"></script>
+    <script src="https://fb.me/react-0.14.3.js"></script>
+    <script src="https://fb.me/react-dom-0.14.3.js"></script>
+    <script src="jquery.js" charset="utf-8"></script>
+    <script src="https://www.google.com/jsapi"></script>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    
+    
+    <div class="searchbar">
+    <input type="text" placeholder="enter product name" id='pname'> 
+    <button id='searchbtn' onclick="search()" class="btn-danger">SEARCH</button></div>
+    <div id ='sidebar'>
+      <div><p>Dept chosen: <span id='chdep'></span></p><p>Color chosen: <span id='chcol'></span></p></div>
+      <div id= 'dept'><h3><u>DEPT</u></h3></div>
+      <div id='color'><h3><u>COLORS</u></h3></div>
+    </div>
+    <div id='page'>
+
+    </div>
+    <div id='main'
+    
+    ></div>
+    
+  </body>
+</html>
+<script type="text/javascript">
+  var pageno=0;
+var socket= io();
+socket.on('rec',function(data)
+{
+  var x=$('#msgbox').html();
+  $('#msgbox').html(x+'<p><bold>'+data.name+': </bold>'+data.msg+'</p>');
+});
+function goto(x)
+{
+  
+  var z=parseInt(x);
+  search(z);
+}
+function addpageno()
+{
+  var pp;var d=$('#page');d.html("");
+  for(pp=0;pp<10;pp++)
+  {
+    d.append("<button onclick=goto("+pp.toString()+") class='btn-success'>"+pp.toString()+"</button>");
+   // $('#page').html(d+'<button>2</button>');
+  }
+  d.append("      .....................")
+}
+socket.on('rrr',data=>
+{
+  var le=data.length;var main= $('#main');
+  main.html("");
+  if (le>0){
+  addpageno();
+//console.log(JSON.parse(JSON.stringify(data)));console.log('ok');
+
+
+  console.log(data[1]);
+  for(j=0;j<le;j++)
+  { var ee=data[j];
+    var res=`<div id='product'>
+      <p><b>Product Name: </b>`+ee["sub_dept"]+`</p>
+      <p><b>Description: </b>`+ee["enc_department_description"]+`</p>
+      <p><b>Colour: </b>`+ee["colour"]+`</p>
+      <p><b>Size Label: </b>`+ee["size_label"]+`</p>
+      <p><b>Size Label: </b>`+ee["f_price"]+`</p>
+      `
+    main.append(res);
+  }
+  
+  
+
+} else
+{
+ main.append('<b>NO PRODUCT FOUND</b>');
+}
+});
+$(document).on("click","#depbtn",function(e)
+{  var a=e.target.innerHTML;
+  var d= $('#chdep'); d.html(a);
+});
+$(document).on("click","#colbtn",function(e)
+{  var a=e.target.innerHTML;
+  var d= $('#chcol'); d.html(a);
+});
+
+
+socket.on('senddata',data=>
+{
+  var dep= data[0]; var color=data[1];
+  var i; var dept= $('#dept');var colors= $('#color');dept.html("<p><u>DEPT</u></p>");colors.html("<p><u>COLORS</u></p>");
+  for(i=0;i<dep.length;i++)
+  {
+    var z= dep[i]["sub_dept"];
+    dept.append('<p><button class="btn-danger" id="depbtn">'+z+'</button></p>');
+  }
+  for(i=0;i<dep.length;i++)
+  {
+    var z= color[i]["colour"];
+    colors.append('<p><button class="btn-danger" id="colbtn">'+z+'</button></p>');
+  }
+console.log(data);
+});
+
+function search(pa)
+{
+  pa= pa||0;
+  var dep= $('#chdep').text(); var col= $('#chcol').text(); console.log(col+dep);
+  var pname= $('#pname').val(); var main= $('#main'); main.html("");
+  main.append('<b>PLEASE WAIT</b>');
+  socket.emit('search',{"pname":pname,"pageno":pa,"dep":dep,"col":col});
+}
+
+</script>
+
+<style>
+  .body
+  {
+    font-size: small;
+    overflow:scroll;
+  }
+#sidebar
+{
+background-color: black;
+color:white;
+width: 20%;
+justify-content: center;
+position:fixed;
+  z-index: 1000;
+}
+  #dept,#color
+{
+  text-align: center;
+  font-size: small;
+  line-height: 5px;
+}
+.searchbar
+{
+  text-align: center;
+  margin-top: 1%; margin-left: 15%; margin-bottom: 3%;
+}
+#pname
+{
+  width:40%;border-radius: 10%; padding: 3px;
+}
+#searchbtn
+{
+ border-radius: 50%;
+ border:0px solid black;
+}
+#main
+{
+  margin-left: 40%;
+  background-color: blue;
+  
+  width: 40%;
+  
+  
+}
+#page
+{
+  
+  margin-left: 40%;
+}
+#product
+{
+  text-align: center;
+  color:white;
+  background-color: black;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 5px;
+
+}
+</style>
